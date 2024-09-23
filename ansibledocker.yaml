@@ -1,0 +1,30 @@
+---
+- hosts: dockerservers
+  gather_facts: false
+  remote_user: root
+  tasks:
+    - name: Build Docker image
+      community.docker.docker_image:
+        name: mico:latest
+        source: build
+        build:
+          path: /root/projects
+        state: present
+
+    - name: Stop the container
+      community.docker.docker_container:
+        name: mico-container
+        state: stopped
+
+    - name: Remove the container
+      community.docker.docker_container:
+        name: mico-container
+        state: absent
+
+    - name: Create and start the container
+      community.docker.docker_container:
+        name: mico-container
+        image: mico:latest
+        ports:
+          - "80:80"
+        state: started
